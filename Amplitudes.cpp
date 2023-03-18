@@ -7,30 +7,37 @@
 #include <fstream>
 
 
-//El spin se controla desde aquí porque los spinores requieren ser iniciados con constantes de tipo unsigned int
-const unsigned int J=2;
+//El spin se controla desde aquí porque los spinores requieren ser iniciados con constantes de tipo unsigned int. Si se inicia luego, el constructor de spinores devuelve "Error: 2J+1 is not a constant expression"
+const unsigned int J=3;
 
 //Función que calcula la amplitud compleja del decaimiento
-double prob(int,int, float, float);
+double prob(int,int, double, double);
 
 
 int main(){
 //Se declaran e inician en su valor mínimo las variables que se van a usar. J es spin, M es helicidad inicial, la1 es helicidad de la partícula 1, la 2 es helicidad de la partícula 2.
-int J=1, M=0,la1=0,la2=0,lambda=0;
+int M=0,la1=0,la2=0,lambda=0;
 //IMPORTANTE: lambda NO ES UN PARÁMETRO LIBRE. ES LA HELICIDAD DE EL ESTADO FINAL, IGUAL A la1-la2
 
+//Inicialización de prueba
+M=0;la1=2;la2=-1; lambda=la1-la2;
 
-//Rotation rotacion (ThreeVector(-sin(phi)*theta,cos(phi)*theta,0));
-double theta=1, phi=2;
-//El spinor de un estado puro es 1 en el componente de spin correspondiente y 0 en los demás. Ejemplos:
-// Para una partícula de spin 1/2, la configuración + es (1,0,0), la 0 es (0,1,0) y la - es (0,0,1)
-
+//Se crea el archivo de salida con los títulos en los ejes. El formato de datos que uso es una lista de todos los puntos (theta,phi,P) y los grafico con ax.plot_trisurface() en el archivo de python
 std::ofstream Datos("datos.dat");
+Datos<<"Theta, Phi, P" <<std::endl;
 
-for (int i=0;i<10000; i++){
-Datos<<i*M_PI/10000<<" "<<prob(1,2,2*i*M_PI/10000,0)<<std::endl;}
-
-
+//IMPORTANTE: EL ALGORITMO ES O(n²) CON RESPECTO A PUNTOS. NO ES EL NÚMERO TOTAL; ES EL NÚMERO DE PUNTOS POR EJE
+int puntos=100;
+//Se inicializan theta y phi por si acaso
+double theta,phi;
+for (int i=0;i<puntos; i++){
+	for (int j=0;j<puntos;j++){
+	theta= 2*i*M_PI/puntos;
+	phi= 2*j*M_PI/puntos;
+	Datos<<theta<<","<<phi<<","<<prob(M,lambda,theta,phi)<<std::endl; 
+	
+	}
+}
 Datos.close();
 
 
@@ -40,8 +47,10 @@ return 0;
 //Zona de definición de funciones:
 
 
-double prob(int M,int m, float theta, float phi){
+double prob(int M,int m, double theta, double phi){
 //Calcula la amplitud compleja a lo largo de cierto theta y phi para el estado inicial (J,M) y el estado final (J,m). La salida por defecto es 0
+
+//POSIBLE ERROR: Las distribuciones angulares que probé son independientes de phi, pero no sé si esto sea el comportamiento esperado. Si se cambia el eje de rotación aparece una dependencia, por lo que realmente no tengo punto de referencia para saber si esto es esperado
 
 //Primero: M no puede exceder J porque el spin a lo largo de z sería mayor que el total. Se implementa la condición como barrera para el usuario.
 if (abs(M)>J){std::cout<<"Error en la función Amplitud: la helicidad inicial("<<M<<") Debe ser menor o igual al spin("<<J<<")"<<std::endl; return 0;}
@@ -49,6 +58,8 @@ if (abs(M)>J){std::cout<<"Error en la función Amplitud: la helicidad inicial("<
 if (abs(m)>J){std::cout<<"Error en la función Amplitud: la helicidad final("<<m<<") Debe ser menor o igual al spin("<<J<<")"<<std::endl; return 0;}
 
 //Se definen los spinores de estado inicial y final, que son 0 en todos los componentes excepto el M para el inicial y m para el final, en donde es 1
+//El spinor de un estado puro es 1 en el componente de spin correspondiente y 0 en los demás. Ejemplos:
+// Para una partícula de spin 1/2, la configuración + es (1,0,0), la 0 es (0,1,0) y la - es (0,0,1)
 Spinor <(2*J+1)> Xi,Xf;
 // Esta implementación garantiza que va en la posición adecuada: 0 para M=J, 1 para M = J-1, ..., 2J para M=-J
 Xi[J-M]=1;
