@@ -11,8 +11,9 @@ x=datos[:,0]
 y=datos[:,1]
 z=datos[:,2]
 ax.plot_trisurf(x, y, z)
+ax.view_init(25, 75)
 #Se muestra la distribución porque se pierde la capacidad de rotarla al guardar.
 #ERROR IMPORTANTE: LA GRÁFICA SIEMPRE SALE VACÍA. CORREGIR
-plt.show()
 plt.savefig("Distribucion.pdf")
+plt.show()
 plt.close()
