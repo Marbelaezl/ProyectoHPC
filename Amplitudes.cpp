@@ -5,21 +5,30 @@
 #include<complex>
 #include<Eigen/Dense>
 #include <fstream>
+#include<assert.h>
+#include<string.h>
 
-/* class particula{
+
+class particula{
+	public:
 	const unsigned int J;
 	const int M;
-	particula(unsigned int j, int m): J(j),M(m){};
-	auto spinor();
-}; */
+	const std::vector<double> H; //H por helicidades
+	particula(unsigned int j, int m,std::vector<double> h): J(j),M(m),H(h){assert(h.size()==J+1);}
+	void print(){for(int i=0;i<=J;i++){std::cout<<H[i]<<std::endl;}}
+};
 
 
-//Función que calcula la amplitud compleja del decaimiento
+//Función que calcula la amplitud compleja de un decaimiento hacia cierto estado de spin
 double prob(int,int,int, double, double);
 double prob0(int,int, double, double);
 double prob1(int,int, double, double);
 double prob2(int,int, double, double);
 double prob3(int,int, double, double);
+
+
+//Función de decaímiento para una partícula
+void decaimiento(particula, std::string,int);
 
 int main(){
 //Se declaran e inician en su valor mínimo las variables que se van a usar. J es spin, M es helicidad inicial, la1 es helicidad de la partícula 1, la 2 es helicidad de la partícula 2.
@@ -28,25 +37,16 @@ int J=0,M=0,la1=0,la2=0,lambda=0;
 
 //Inicialización de prueba
 J=2;M=2;la1=-1;la2=1; lambda=la1-la2;
-
-
+std::vector<double> prueba({1.0,0.0,1.0});
+particula W(2,2,prueba);
 //Se crea el archivo de salida con los títulos en los ejes. El formato de datos que uso es una lista de todos los puntos (theta,phi,P) y los grafico con ax.plot_trisurface() en el archivo de python
-std::ofstream Datos("datos.dat");
-Datos<<"Theta, Phi, P" <<std::endl;
+
+int puntos=99;
+decaimiento (W,"datos.dat",puntos);
+
 
 //IMPORTANTE: EL ALGORITMO ES O(n²) CON RESPECTO A PUNTOS. NO ES EL NÚMERO TOTAL; ES EL NÚMERO DE PUNTOS POR EJE
-int puntos=100;
 //Se inicializan theta y phi por si acaso
-double theta,phi;
-for (int i=0;i<puntos; i++){
-	for (int j=0;j<puntos;j++){
-	theta= 2*i*M_PI/puntos;
-	phi= 2*j*M_PI/puntos;
-	Datos<<theta<<","<<phi<<","<<prob(J,M,lambda,theta,phi)<<std::endl; 
-	}
-} 
-Datos.close();
-
 return 0;
 }
 
@@ -133,4 +133,29 @@ Xf[(J-m)/2]=1;
 Rotation rot(ThreeVector (-sin(phi)*theta,cos(phi)*theta,0));
 std::complex<double> res=sqrt((J+1.0)/(4* M_PI))*(rot*Xf).adjoint()*Xi;
 return std::norm(res);
+}
+
+void decaimiento(particula part, std::string nombre,int puntos){
+std::ofstream Datos(nombre);
+Datos<<"Theta, Phi, P" <<std::endl;
+double resultado[puntos*puntos];
+int cont=0;
+double theta,phi;
+for (int i=0;i<puntos*puntos;i++){
+resultado[i]=0;}
+for (int m=0; m<part.H.size();m++){
+	for (int i=0;i<puntos;i++){
+		for (int j=0;j<puntos;j++){
+		theta= 2*i*M_PI/puntos;
+		phi= 2*j*M_PI/puntos;
+		resultado[cont]+=prob(part.J,part.M,(part.J-2*m),theta,phi)*part.H[m];
+		cont=cont+1;
+		if (m==(part.H.size()-1)){
+		Datos<<theta<<","<<phi<<","<<resultado[(puntos*i)+j]<<std::endl;}
+		}
+		}
+		cont=0;
+	}
+Datos.close();
+
 }
