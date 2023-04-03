@@ -14,21 +14,31 @@
 #include<fstream>
 #include<cmath>
 
-double ASQ (double cosTheta)  {
+double ASQ (double theta, double phi)  {
   Spinor<3> chiInitial={1,0,0};
   Spinor<3> chiFinal  ={0,0,1};
-  Rotation R(ThreeVector(0,-acos(cosTheta),0));
+  Rotation R(ThreeVector(-sin(phi)*theta,cos(phi)*theta,0));
   return 3.0/4.0/M_PI*norm(((R*chiFinal).adjoint()*chiInitial)(0) );
+  //std::cout<<R<<std::endl;
 };
 
 //La función main fue incluida por nosotros para graficar sin QAT, pero la función de cálculos viene directamente del autor
 int main(){
-std::ofstream Datos("WDecay.dat");
+std::ofstream Datos("datos.dat");
+Datos<<"Theta, Phi, P" <<std::endl;
 int puntos=100;
+//double suma = 0;
 double theta;
+double phi;
+for (int j=0;j<puntos;j++){
 for (int i=0;i<puntos;i++){
 theta= 2*M_PI*i/puntos;
-Datos<<theta<<","<<ASQ(cos(theta))<<std::endl;
+phi= 2*M_PI*j/puntos;
+//suma += ASQ(theta,phi);
+Datos<<theta<<","<<phi<<","<<ASQ(theta,phi)<<std::endl;
+//std::cout<<suma<<std::endl;
+}
+//suma = 0;
 }
 return 0;
 }

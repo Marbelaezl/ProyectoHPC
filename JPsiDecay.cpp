@@ -13,11 +13,11 @@
 #include <string>
 #include <fstream>
 
-double ASQ (double cosTheta)  {
+double ASQ (double theta, double phi)  {
   Spinor<3> chiInitial={1,0,0};
   Spinor<3> chiFinal1  ={0,0,1};
   Spinor<3> chiFinal2  ={1,0,0};
-  Rotation R(ThreeVector(0,-acos(cosTheta),0));
+  Rotation R(ThreeVector(-sin(phi)*theta,cos(phi)*theta,0));
   return 3.0/4.0/M_PI*(norm(((R*chiFinal1).adjoint()*chiInitial)(0)) +
 		       norm(((R*chiFinal2).adjoint()*chiInitial)(0)));
 };
@@ -25,11 +25,16 @@ double ASQ (double cosTheta)  {
 int main(){
 //La función main fue incluida por nosotros para graficar sin QAT, pero la función de cálculos viene directamente del autor
 std::ofstream Datos("JPsiDecay.dat");
+Datos<<"Theta, Phi, P" <<std::endl;
 int puntos=100;
 double theta;
+double phi;
+for (int j=0;j<puntos;j++){
 for (int i=0;i<puntos;i++){
 theta= 2*M_PI*i/puntos;
-Datos<<theta<<","<<ASQ(cos(theta))<<std::endl;
+phi= 2*M_PI*j/puntos;
+Datos<<theta<<","<<phi<<","<<ASQ(theta,phi)<<std::endl;
+}
 }
 return 0;}
 

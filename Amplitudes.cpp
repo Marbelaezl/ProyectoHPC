@@ -37,7 +37,7 @@ int J=0,M=0,la1=0,la2=0,lambda=0;
 
 //Inicialización de prueba
 J=2;M=2;la1=-1;la2=1; lambda=la1-la2;
-std::vector<double> prueba({1.0,0.0,1.0});
+std::vector<double> prueba({0.0,0.0,1.0});
 particula W(2,2,prueba);
 //Se crea el archivo de salida con los títulos en los ejes. El formato de datos que uso es una lista de todos los puntos (theta,phi,P) y los grafico con ax.plot_trisurface() en el archivo de python
 
@@ -88,8 +88,8 @@ if(M+J%2==1){std::cout<<"Error en la función amplitud: no se permiten helicidad
 // Para una partícula de spin 1/2, la configuración + es (1,0,0), la 0 es (0,1,0) y la - es (0,0,1)
 Spinor <(J+1)> Xi,Xf;
 // Esta implementación garantiza que va en la posición adecuada: 0 para M=J, 1 para M = J-1, ..., 2J para M=-J
-Xi[(J-M)/2]=1;
-Xf[(J-m)/2]=1;
+Xi[(J+M)/2]=1;
+Xf[(J+m)/2]=1;
 //Se define la rotación cuya matriz se va a hallar. Como la rotación es de theta radianes, la magnitud del vector debe ser theta. El eje es el que aparece en el libro.
 Rotation rot(ThreeVector (-sin(phi)*theta,cos(phi)*theta,0));
 std::complex<double> res=sqrt((J+1.0)/(4* M_PI))*(rot*Xf).adjoint()*Xi;
@@ -102,8 +102,8 @@ if (abs(m)>J){std::cout<<"Error en la función Amplitud: la helicidad final("<<m
 if(m+J%2==1){std::cout<<"Error en la función amplitud: no se permiten helicidades de paridad diferente a la del spin";}
 if(M+J%2==1){std::cout<<"Error en la función amplitud: no se permiten helicidades de paridad diferente a la del spin";}
 Spinor <(J+1)> Xi,Xf;
-Xi[(J-M)/2]=1;
-Xf[(J-m)/2]=1;
+Xi[(J+M)/2]=1;
+Xf[(J+m)/2]=1;
 Rotation rot(ThreeVector (-sin(phi)*theta,cos(phi)*theta,0));
 std::complex<double> res=sqrt((J+1.0)/(4* M_PI))*(rot*Xf).adjoint()*Xi;
 return std::norm(res);
@@ -115,8 +115,8 @@ if (abs(m)>J){std::cout<<"Error en la función Amplitud: la helicidad final("<<m
 if(m+J%2==1){std::cout<<"Error en la función amplitud: no se permiten helicidades de paridad diferente a la del spin";}
 if(M+J%2==1){std::cout<<"Error en la función amplitud: no se permiten helicidades de paridad diferente a la del spin";}
 Spinor <(J+1)> Xi,Xf;
-Xi[(J-M)/2]=1;
-Xf[(J-m)/2]=1;
+Xi[(J+M)/2]=1;
+Xf[(J+m)/2]=1;
 Rotation rot(ThreeVector (-sin(phi)*theta,cos(phi)*theta,0));
 std::complex<double> res=sqrt((J+1.0)/(4* M_PI))*(rot*Xf).adjoint()*Xi;
 return std::norm(res);
@@ -128,8 +128,8 @@ if (abs(m)>J){std::cout<<"Error en la función Amplitud: la helicidad final("<<m
 if(m+J%2==1){std::cout<<"Error en la función amplitud: no se permiten helicidades de paridad diferente a la del spin";}
 if(M+J%2==1){std::cout<<"Error en la función amplitud: no se permiten helicidades de paridad diferente a la del spin";}
 Spinor <(J+1)> Xi,Xf;
-Xi[(J-M)/2]=1;
-Xf[(J-m)/2]=1;
+Xi[(J+M)/2]=1;
+Xf[(J+m)/2]=1;
 Rotation rot(ThreeVector (-sin(phi)*theta,cos(phi)*theta,0));
 std::complex<double> res=sqrt((J+1.0)/(4* M_PI))*(rot*Xf).adjoint()*Xi;
 return std::norm(res);
